@@ -1,0 +1,17 @@
+//このコードを実行する前に、cert.pem（公開鍵証明書）とkey.pem（秘密鍵）のファイルがサーバー上に存在し、正しいパスが指定されていることを確認してください。
+//なお、このコードはHTTPSサーバーとして動作しますが、適切な証明書と秘密鍵が必要です。これらのファイルは通常、認証局から取得しますが、自己署名証明書を作成して使用することも可能です。
+
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/path', methods=['POST'])
+def handle_post():
+    data = request.get_json()  # 受信データをJSONとして取得
+    print(data)  # データをコンソールに出力
+
+    # レスポンスを返す（ここでは単に受信したデータをそのまま返しています）
+    return jsonify(data)
+
+if __name__ == '__main__':
+    app.run(ssl_context=('cert.pem', 'key.pem'))  # SSL/TLS証明書と秘密鍵を指定
