@@ -1,0 +1,53 @@
+#include <Network/Socket.mqh>
+
+CSocket socket;
+
+void OnStart()
+{
+   // ソケットを作成
+   if(!socket.Create())
+   {
+      Print("Socket create error: ", GetLastError());
+      return;
+   }
+
+   // サーバーと接続
+   if(!socket.Connect("your.server.com", 443)) // SSL/TLSポート
+   {
+      Print("Failed to connect: ", GetLastError());
+      socket.Close();
+      return;
+   }
+
+   // APIキー
+   string apiKey = "YOUR_API_KEY";
+
+   // HTTPリクエストを作成
+   string request = "GET /api/v1/resource HTTP/1.1\r\n";
+   request += "Host: your.server.com\r\n";
+   request += "Authorization: Bearer " + apiKey + "\r\n"; // APIキーをヘッダに追加
+   request += "\r\n"; // ヘッダの終端を示す空行
+
+   // リクエストをバイト配列に変換
+   uchar requestArr[];
+   StringToCharArray(request, requestArr);
+
+   // リクエストを送信
+   if(!socket.Send(requestArr))
+   {
+      Print("Failed to send: ", GetLastError());
+   }
+
+   // レスポンスを受け取る
+   uchar responseArr[1024];
+   int received;
+   while((received = socket.Recv(responseArr, 1024)) != -1)
+   {
+      string response;
+      CharArrayToString(responseArr, response, 0, received);
+      Print(response);
+   }
+
+   // ソケットを閉じる
+   socket.Close();
+}
