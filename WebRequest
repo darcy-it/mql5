@@ -1,0 +1,27 @@
+void OnStart()
+{
+    string url = "http://your-server.com/path"; // サーバーURL
+    string headers = "Content-Type: application/json\r\n"; // 必要に応じてヘッダーを追加
+    string data = "{\"key\": \"value\"}"; // JSON形式のデータ
+    char post[], result[];
+    int res, timeout = 5000;
+
+    // データを文字配列に変換
+    StringToCharArray(data, post);
+
+    // Webリクエストを送信
+    res = WebRequest("POST", url, headers, timeout, post, result);
+
+    // レスポンスを確認
+    if (res != -1)
+    {
+        string response;
+        ArrayResize(response, ArraySize(result));
+        CharArrayToString(result, response);
+        Print("Server response: ", response);
+    }
+    else
+    {
+        Print("WebRequest failed with error code: ", GetLastError());
+    }
+}
