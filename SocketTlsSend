@@ -1,0 +1,14 @@
+string text = "your data"; // 送信するデータ
+int socket = SocketCreate(); // ソケットの作成
+
+if(socket != INVALID_HANDLE) {
+    if(SocketConnect(socket, "your-server.com", 443, 1000)) { // サーバーへの接続
+        if(SocketTlsHandshake(socket, "your-server.com")) { // TLSハンドシェイク
+            uchar data[]; 
+            StringToCharArray(text, data);
+            SocketTlsSend(socket, data); // データの送信
+        }
+    }
+
+    SocketClose(socket); // ソケットのクローズ
+}
