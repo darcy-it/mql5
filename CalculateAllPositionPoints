@@ -1,0 +1,43 @@
+// すべてのポジションのポイント数を計算する関数
+void CalculateAllPositionPoints(string symbol)
+{
+    // 現在の価格を取得
+    double current_price = SymbolInfoDouble(symbol, SYMBOL_BID);
+    if(current_price == -1)
+    {
+        Print("SymbolInfoDouble failed, error ",GetLastError());
+        return;
+    }
+
+    // 全てのポジションについてループ
+    for(int i = PositionsTotal() - 1; i >= 0; i--)
+    {
+        ulong position_ticket = PositionGetTicket(i);
+        if(position_ticket <= 0)
+        {
+            Print("PositionGetTicket failed, error ",GetLastError());
+            continue;
+        }
+
+        // 選択したポジション情報を取得
+        if(!PositionSelectByTicket(position_ticket))
+        {
+            Print("PositionSelectByTicket failed, error ",GetLastError());
+            continue;
+        }
+
+        // ポジションのオープン価格を取得
+        double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+        if(open_price == -1)
+        {
+            Print("PositionGetDouble failed, error ",GetLastError());
+            continue;
+        }
+
+        // ポイント数を求める
+        double points = (current_price - open_price) / SymbolInfoDouble(symbol, SYMBOL_POINT);
+
+        // ポイント数を表示
+        Print("Position ticket: ", position_ticket, ", Points: ", points);
+    }
+}
