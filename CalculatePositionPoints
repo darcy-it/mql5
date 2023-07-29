@@ -1,0 +1,35 @@
+// 選択されたポジションのポイント数を計算する関数
+double CalculatePositionPoints(string symbol, ulong position_ticket)
+{
+    // 選択したポジション情報を取得
+    MqlTradeRequest request={0};
+    MqlTradeResult  result={0};
+
+    request.action=TRADE_ACTION_DEAL;
+    if(!PositionSelectByTicket(position_ticket))
+    {
+        Print("PositionSelectByTicket failed, error ",GetLastError());
+        return -1;
+    }
+
+    // ポジションのオープン価格を取得
+    double open_price = PositionGetDouble(POSITION_PRICE_OPEN);
+    if(open_price == -1)
+    {
+        Print("PositionGetDouble failed, error ",GetLastError());
+        return -1;
+    }
+
+    // 現在の価格を取得
+    double current_price = SymbolInfoDouble(symbol, SYMBOL_BID);
+    if(current_price == -1)
+    {
+        Print("SymbolInfoDouble failed, error ",GetLastError());
+        return -1;
+    }
+
+    // ポイント数を求める
+    int point = (current_price - open_price) / SymbolInfoDouble(symbol, SYMBOL_POINT);
+
+    return point;
+}
