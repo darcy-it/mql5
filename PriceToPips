@@ -1,0 +1,23 @@
+//+------------------------------------------------------------------+
+//| 価格をpipsに換算する関数
+//+------------------------------------------------------------------+
+double PriceToPips(double price)
+{
+   double pips = 0;
+
+   // 現在の通貨ペアの小数点以下の桁数を取得
+   int digits = (int)MarketInfo(Symbol(), MODE_DIGITS);
+
+   // 3桁・5桁のFXブローカーの場合
+   if(digits == 3 || digits == 5){
+     pips = price * MathPow(10, digits) / 10;
+   }
+   // 2桁・4桁のFXブローカーの場合
+   if(digits == 2 || digits == 4){
+     pips = price * MathPow(10, digits);
+   }
+   // 少数点以下を１桁に丸める（目的によって桁数は変更する）
+   pips = NormalizeDouble(pips, 1);
+
+   return(pips);
+}
